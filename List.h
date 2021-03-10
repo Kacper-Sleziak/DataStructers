@@ -12,7 +12,7 @@ class List {
         elementOfList *temporary = 0;
         elementOfList *head = 0;
 
-        void addEnd(int data){
+        void pushEnd(int data){
            node = new elementOfList;
            node -> data = data;
 
@@ -28,10 +28,10 @@ class List {
            node -> next = 0;
         }
 
-        void addStart(int data){
+        void pushFront(int data){
             node = new elementOfList;
             if (head == 0){
-                this -> addEnd(data);
+                this->pushEnd(data);
             }
 
             else {
@@ -90,20 +90,26 @@ class List {
                     if(actualElement -> next == 0){  //przypadek kiedy usuwamy ostatni element listy
                         temporary = previousElement;
                         node = previousElement;
+                        delete actualElement;
                         actualElement -> next = 0;
                         actualElement = previousElement;
                         actualElement -> next = 0;
+
 
                     }
 
                     else if(previousElement != 0) {        //przypadek ogólny
                         previousElement->next = actualElement->next;
+                        delete actualElement;
                         actualElement->next = 0;
                         actualElement = previousElement;
                     }
 
                     else{                              //przypadek kiedy usuwamy pierwszy element listy
                         head = actualElement -> next;
+                        delete actualElement;
+                        actualElement->next = 0;
+
                     }
                 }
 
@@ -144,7 +150,7 @@ class List {
                     std::cin >> data;
                     std::cout << std::endl;
 
-                    this->addStart(data);
+                    this->pushFront(data);
                 }
 
                 else if (x == 2) {
@@ -154,7 +160,7 @@ class List {
                     std::cin >> data;
                     std::cout << std::endl;
 
-                    this->addEnd(data);
+                    this->pushEnd(data);
                 }
 
                 else if (x == 3) {
