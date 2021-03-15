@@ -1,148 +1,217 @@
 #include <iostream>
 #include <string>
 
+// do obsługi drzewa używa się wyłącznie funkcji
+// push(data) dodaje gałąź
+// pop(data) usuwa gałąź
+// printBT() wyświetla utworzone drzewo
 
 class BinarySearchingTree {
 
-    public:
+public:
 
-    struct node{
+    struct node {
         int data;
-        node * parent;
-        node * leftKid;
-        node * rightKid;
+        node *parent;
+        node *leftKid;
+        node *rightKid;
     };
 
 
     int treeSize = 0;
 
-    node * actualNode = 0;
-    node * root = 0;
+    node *actualNode = 0;
+    node *root = 0;
 
-    void push(int data){
+    void push(int data) {
 
         actualNode = new node; //do wskaznika przypisujemy nowa stworzona galaz
-        actualNode -> data = data;
+        actualNode->data = data;
 
-        if(treeSize == 0){
+        if (treeSize == 0) {
             root = actualNode;
 
-            actualNode -> parent = 0;
-            actualNode -> leftKid = 0;
-            actualNode -> rightKid = 0;
-        }
+            actualNode->parent = 0;
+            actualNode->leftKid = 0;
+            actualNode->rightKid = 0;
+        } else {
+            node *temporary = root;
+            while (true) {
+                if (data > temporary->data) {
+                    if (temporary->rightKid == 0) {
+                        temporary->rightKid = actualNode;
 
-
-        else {
-            node * temporary = root;
-            while (true){
-                if (data > temporary -> data){
-                    if (temporary -> rightKid == 0){
-                        temporary -> rightKid = actualNode;
-
-                        actualNode -> parent = temporary;
-                        actualNode -> leftKid = 0;
-                        actualNode -> rightKid = 0;
+                        actualNode->parent = temporary;
+                        actualNode->leftKid = 0;
+                        actualNode->rightKid = 0;
                         break;
                     }
 
-                    temporary = temporary -> rightKid;
-                }
+                    temporary = temporary->rightKid;
+                } else {
+                    if (temporary->leftKid == 0) {
+                        temporary->leftKid = actualNode;
 
-                else{
-                    if(temporary -> leftKid == 0){
-                        temporary -> leftKid = actualNode;
-
-                        actualNode -> parent = temporary;
-                        actualNode -> leftKid = 0;
-                        actualNode -> rightKid = 0;
+                        actualNode->parent = temporary;
+                        actualNode->leftKid = 0;
+                        actualNode->rightKid = 0;
                         break;
                     }
-                    temporary = temporary -> leftKid;
+                    temporary = temporary->leftKid;
                 }
             }
         }
-        treeSize ++;
+        treeSize++;
     }
 
-    void pop(int data){
-        while (true){
-            node * nodeToDelte = this -> searchValue(data);
+    void removeNode(node *nodeToDelete) {
 
-            if (nodeToDelte != 0){
-                if(nodeToDelte -> leftKid == 0 and nodeToDelte -> rightKid == 0) { //przypadek kiedy gałąź nie ma dzieci
+        if (nodeToDelete->leftKid == 0 and nodeToDelete->rightKid == 0) { //przypadek kiedy gałąź nie ma dzieci
 
-                    if (nodeToDelte->data > nodeToDelte->parent->data) {
-                        nodeToDelte->parent->rightKid = 0;
-                    } else {
-                        nodeToDelte->parent->leftKid = 0;
+            if (nodeToDelete == root) {
+                root = 0;
+            }
+            else {
+                if (nodeToDelete->data > nodeToDelete->parent->data) {
+                    nodeToDelete->parent->rightKid = 0;
+                }
+
+                else {
+                    nodeToDelete->parent->leftKid = 0;
+                }
+
+            }
+            nodeToDelete->parent =0;
+            delete nodeToDelete;
+        }
+
+        else if ((nodeToDelete->rightKid != 0 and nodeToDelete->leftKid == 0)
+        or (nodeToDelete->rightKid == 0 and nodeToDelete->leftKid != 0)){
+
+            node *nodeToReplace; //galaz ktora chcemy przeniesc w inne miejsce
+
+            if (nodeToDelete->rightKid != 0 and nodeToDelete->leftKid == 0) {
+                nodeToReplace = nodeToDelete->rightKid;
+            }
+
+            else if(nodeToDelete->rightKid == 0 and nodeToDelete->leftKid != 0){
+                nodeToReplace = nodeToDelete->leftKid;
+            }
+
+
+
+            if (nodeToDelete == root) {
+                root = nodeToDelete->leftKid;
+            }
+
+            else {
+                node *actualNode = nodeToDelete->parent;   //aktualnie sprawdzona galaz pod katem przypiecia wczesniejszej galezi
+
+                while (true){
+                    if (actualNode -> data < nodeToReplace -> data){
+                        if(actualNode -> rightKid == 0){
+                            nodeToReplace ->parent = actualNode;
+                            actualNode -> rightKid = nodeToReplace;
+                            break;
+                        }
+                        else{
+                            actualNode = actualNode -> rightKid;
+                        }
                     }
-                    delete nodeToDelte;
+
+                    else{
+                        if(actualNode -> leftKid == 0){
+                            nodeToReplace -> parent = actualNode;
+                            actualNode -> leftKid = nodeToReplace;
+                            break;
+                        }
+
+                        else{
+                            actualNode = actualNode -> leftKid;
+                        }
+                    }
+
+
                 }
+            }
+            nodeToDelete -> parent = 0;
+            nodeToDelete -> rightKid = 0;
+            nodeToDelete -> leftKid = 0;
+            delete nodeToDelete;
 
-                else if(nodeToDelte -> leftKid !=0 and nodeToDelte ->rightKid ==0 ){ //kiedy gałąź ma tylko lewe dziecko
-                    nodeToDelte->leftKid->parent = nodeToDelte ->parent;
-                    delete nodeToDelte;
-                }
+            }
+            else { //uzywam rekurencji, zeby sprowadzić usuwanie do, któregos z wcześniejszych przypadków
 
-                else if(nodeToDelte -> rightKid !=0 and nodeToDelte ->leftKid ==0 ){ //kiedy gałąź ma tylko prawe dziecko
-                    nodeToDelte->rightKid->parent = nodeToDelte -> parent;
-                    delete nodeToDelte;
-                }
+                nodeToDelete->data = nodeToDelete->rightKid->data;
+                nodeToDelete = nodeToDelete->rightKid;
+                nodeToDelete ->parent->rightKid =0;
 
-                else{ //pozostałe przypadki
-
-                }
-
-                treeSize --;
+                removeNode(nodeToDelete);
             }
 
-            else{
-                break;
+            treeSize--;
+        }
+
+        void pop(int data) {
+            while (true) {
+                node *nodeToDelete = searchValue(data);
+
+                if (nodeToDelete != 0) {
+                    removeNode(nodeToDelete);
+                } else {
+                    break;
+                }
             }
         }
-    }
 
-    node* searchAlgorithm(int data, node * actualNode) {
+        node *searchAlgorithm(int data, node *actualNode) {
 
-        if (actualNode->data > data and actualNode->leftKid != 0) {
-            searchAlgorithm(data, actualNode->leftKid);
-        }
-
-        else if (actualNode-> data  < data and actualNode->rightKid != 0) {
+            if (actualNode->data > data and actualNode->leftKid != 0) {
+                searchAlgorithm(data, actualNode->leftKid);
+            } else if (actualNode->data < data and actualNode->rightKid != 0) {
                 searchAlgorithm(data, actualNode->rightKid);
+            } else if (actualNode->data == data) {
+                return actualNode;
+            } else {
+                return 0;
+            }
         }
 
-       else if (actualNode -> data == data) {
-            return actualNode;
+
+        node *searchValue(int data) {
+            return searchAlgorithm(data, root);
         }
 
-       else {
-            return 0;
-        }
-    }
+        void printBT(const std::string &prefix, const node *node, bool isLeft) {
+            if (node != 0) {
+                std::cout << prefix;
 
+                std::cout << (isLeft ? "|--->" : "|--->");
 
-    node *searchValue(int data){
-        return searchAlgorithm(data, root);
-    }
+                // print the value of the node
+                std::cout << node->data << std::endl;
 
-
-    void movingOnTree(){
-        preOder(root);
-    }
-
-    void preOder(node* node){           //algorytm chodzienia po drzewie
-        std::cout<<node -> data<<"  ";
-
-        if(node -> leftKid !=0){
-            preOder(node->leftKid);
-        }
-        else if(node -> rightKid !=0){
-            preOder(node -> rightKid);
+                // enter the next tree level - left and right branch
+                printBT(prefix + (isLeft ? "|   " : "    "), node->leftKid, true);
+                printBT(prefix + (isLeft ? "|   " : "    "), node->rightKid, false);
+            }
         }
 
-    }
+        void printBT(const node *node) //trzeba zaczac z korzeń
+        {
+            printBT("", node, false);
+        }
 
-};
+        void printBT() {
+            printBT(root);
+        }
+
+        bool isParentGraterThanKid(node *parent, node *kid) {
+            if (parent->data < kid->data) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    };
 
