@@ -201,11 +201,27 @@ public:
         }
     }
 
+    bool finElement(int data){
+        elementOfList * temporary = head;
+
+        while (true){
+            if (temporary -> data == data){
+                return true;
+            }
+            temporary = temporary -> next;
+
+            if (temporary == 0){
+                break;
+            }
+        }
+        return false;
+    }
+
     void menu(){
 
         int x;
 
-        while (x != 7) {
+        while (x != 8) {
             std::cout<<std::endl;
 
             std::cout << "Wcisnij 1 aby dodac element na poczatek listy" << std::endl;
@@ -216,7 +232,9 @@ public:
             std::cout << "Wcisnij 5 aby usunac element z konca listy" << std::endl;
             std::cout << "Wcisnij 6 aby usunac element z losowego miejsca listy" << std::endl;
 
-            std::cout << "Wcisnij 7 aby wyjsc z programu" << std::endl;
+            std::cout << "Wcisnij 7 aby znalezc element o podanej wartosci" << std::endl;
+
+            std::cout << "Wcisnij 8 aby wyjsc z programu" << std::endl;
 
             std::cout << std::endl;
             std::cout << "Aktualny stan drzewa Listy: " << std::endl;
@@ -271,6 +289,28 @@ public:
 
             else if(x == 6){
                 this -> popRandomElement();
+            }
+
+            else if(x == 7){
+                int data;
+
+                std::cout << std::endl;
+                std::cout << "Podaj wartosc elementy ktory chcesz znalezc: ";
+                std::cin >> data;
+
+                if( this -> finElement(data) == true){
+
+                    std::cout<<std::endl;
+                    std::cout << "Znaleziono Element";
+                    std::cout<<std::endl;
+                }
+
+                else{
+
+                    std::cout<<std::endl;
+                    std::cout << "Nie Znaleziono Elementu!";
+                    std::cout<<std::endl;
+                }
             }
 
             else{

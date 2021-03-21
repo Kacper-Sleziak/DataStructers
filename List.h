@@ -123,6 +123,23 @@ class List {
 
         }
 
+        bool finElement(int data){
+            elementOfList * temporary = head;
+
+            while (true){
+                if (temporary -> data == data){
+                    return true;
+                }
+                temporary = temporary -> next;
+
+                if (temporary == 0){
+                    break;
+                }
+            }
+
+            return false;
+        }
+
         void menu() {
 
             int x;
