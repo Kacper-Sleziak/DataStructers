@@ -1,5 +1,7 @@
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
+#include <sstream>
 
 class DoublyLinkedList {
 public:
@@ -54,6 +56,41 @@ public:
 
     }
 
+    void push(int data, int index){
+        node = new elementOfList;
+        node -> data = data;
+
+        if(index >= listSize){
+            this-> pushEnd(data);
+        }
+
+        else{
+            int counter = 0;
+            elementOfList * temporary = head;
+
+            while (true) {
+
+                if (counter == index-1) {  //konczymy petle w momencie, ktorym temporary jest elementem znajdującym się przed dodawanym nodem
+                    break;
+                }
+
+                temporary = temporary->next;
+                counter++;
+            }
+            elementOfList *helper = temporary->next; //helper to element ktory znajduje sie za elementem losowo dodanym
+
+            node->previous = temporary;
+            node->next = helper;
+
+            helper->previous = node;
+            temporary->next = node;
+
+            listSize++;
+        }
+
+
+    }
+
     void pushOnRandomPosition(int data){
 
         srand(time(NULL));
@@ -100,7 +137,7 @@ public:
 
     }
 
-    void showElements(){
+    void showElementsFromHead(){
 
         if (head != 0) {
 
@@ -125,8 +162,36 @@ public:
             }
         }
 
+
+
         else{
             std::cout<<"Lista jest pusta!";
+        }
+    }
+
+    void showElementsFromTail() {
+
+        if (head != 0) {
+
+            elementOfList *actualElement = tail;
+            int data = actualElement->data;
+            std::cout << std::endl;
+
+            std::cout << "----" << std::endl;
+
+            while (true) {
+                std::cout << data;
+                std::cout << " ";
+
+                if (actualElement->previous == 0) {
+                    std::cout << std::endl;
+                    std::cout << "----";
+                    break;
+                }
+
+                actualElement = actualElement->previous;
+                data = actualElement->data;
+            }
         }
     }
 
@@ -171,34 +236,83 @@ public:
         std::cout<<std::endl;
         std::cout<<"Wielkosc list jest rowna = "<<listSize;
 
-        if (x >= listSize - 1){     //Jeśli wylosowany numer jest wiekszy od wielkosci listy to usuwamy ostatnia liczbe
-            this->popEnd();
-        }
-
-        else if(x == 0){
-            this -> popFront();
+        if(head == 0){
+            std::cout<<"Nie moża wykonać operacji usuwania ponieważ lista jest pusta!";
         }
 
         else {
-            while (true) {
 
-                if (counter == x) {  //konczymy petle w momencie, ktorym temporary jest elementem znajdującym się przed nodem
-                    break;
-                }
-                elementToDelete = elementToDelete->next;
-                counter++;
+            if (x >=listSize - 1) {     //Jeśli wylosowany numer jest wiekszy od wielkosci listy to usuwamy ostatnia liczbe
+                this->popEnd();
+            }
+            else if (x == 0) {          //jesli wylosowany emenet jest glowa
+                this->popFront();
             }
 
-            elementToDelete->previous->next = elementToDelete -> next;
-            elementToDelete ->next -> previous = elementToDelete -> previous;
+            else {
+                while (true) {
 
-            elementToDelete -> next = 0;
-            elementToDelete ->previous = 0;
-            delete elementToDelete;
-            elementToDelete = 0;
+                    if (counter == x) {  //konczymy petle w momencie, ktorym temporary jest elementem znajdującym się przed nodem
+                        break;
+                    }
 
-            listSize --;
+                    elementToDelete = elementToDelete->next;
+                    counter++;
+                }
+
+                elementToDelete->previous->next = elementToDelete->next;
+                elementToDelete->next->previous = elementToDelete->previous;
+
+                elementToDelete->next = 0;
+                elementToDelete->previous = 0;
+                delete elementToDelete;
+                elementToDelete = 0;
+
+                listSize--;
+            }
         }
+    }
+
+    void pop(int data){
+
+        elementOfList * temporary = head;
+
+        while (true){
+
+            if(temporary -> data == data){
+
+                if(temporary == head){
+                    this -> popFront();
+                    break;
+                }
+
+                else if (temporary == tail){
+                    this -> popEnd();
+                    break;
+                }
+
+                else{
+
+                    temporary->previous->next = temporary->next;
+                    temporary->next->previous = temporary->previous;
+                    temporary->previous = 0;
+                    temporary->next = 0;
+                    delete temporary;
+                    listSize--;
+                    break;
+                }
+            }
+
+            temporary = temporary -> next;
+
+            if(temporary == 0){
+                std::cout<<"Nie znaleziono!";
+                break;
+            }
+
+        }
+
+
     }
 
     bool finElement(int data){
@@ -217,11 +331,31 @@ public:
         return false;
     }
 
+    void createListFromFile(std::string file){
+
+        std::fstream myfile(file, std::ios_base::in);
+
+        int data;
+        while (myfile >> data)
+        //while (myfile.good())
+        {
+            if(data != '*'){
+
+                this->pushEnd(data);
+            }
+
+            else {
+                break;
+            }
+        }
+        getchar();
+    }
+
     void menu(){
 
         int x;
 
-        while (x != 8) {
+        while (x != 10) {
             std::cout<<std::endl;
 
             std::cout << "Wcisnij 1 aby dodac element na poczatek listy" << std::endl;
@@ -234,12 +368,19 @@ public:
 
             std::cout << "Wcisnij 7 aby znalezc element o podanej wartosci" << std::endl;
 
-            std::cout << "Wcisnij 8 aby wyjsc z programu" << std::endl;
+            std::cout << "Wcisnij 8 aby dodac element na zadana pozycje" << std::endl;
+
+            std::cout << "Wcisnij 9 aby usunac podana wartosc" << std::endl;
+
+            std::cout << "Wcisnij 10 aby wyjsc z programu" << std::endl;
 
             std::cout << std::endl;
-            std::cout << "Aktualny stan drzewa Listy: " << std::endl;
+            std::cout << "Aktualny stan listy od przodu: ";
+            this->showElementsFromHead();
 
-            this->showElements();
+            std::cout<<std::endl;
+            std::cout << "Aktualny stan listy od tylu: ";
+            this->showElementsFromTail();
 
             std::cout << std::endl;
             std::cout << std::endl;
@@ -311,6 +452,36 @@ public:
                     std::cout << "Nie Znaleziono Elementu!";
                     std::cout<<std::endl;
                 }
+            }
+
+            else if(x == 8){
+
+                int data;
+                int index;
+                std::cout << std::endl;
+                std::cout << "Podaj wartosc ktora chcesz dodac: ";
+                std::cin >> data;
+                std::cout << std::endl;
+                std::cout << "Podaj index: ";
+                std::cin >> index;
+                std::cout << std::endl;
+
+                this->push(data, index);
+            }
+
+            else if (x == 9) {
+
+                int data;
+                std::cout << std::endl;
+                std::cout << "Podaj wartosc ktora chcesz usunac: ";
+                std::cin >> data;
+                std::cout << std::endl;
+
+                this->pop(data);
+            }
+
+            else if (x == 10){
+
             }
 
             else{

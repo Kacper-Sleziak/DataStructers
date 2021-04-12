@@ -1,6 +1,5 @@
 #include <iostream>
 
-
 class MaxHeap {
 
     public:
@@ -14,7 +13,7 @@ class MaxHeap {
             tab[i] = data;
 
 
-            if (i != 0) { //sortowanie jeśli wyraz tab[i] nie jest korzeniem
+            if (i != 0) {    //sortowanie jeśli wyraz tab[i] nie jest korzeniem
                 int parentIndex = (i-1)/2;
                 int kidIndex = i;
 
@@ -138,7 +137,7 @@ class MaxHeap {
                 std::cout << "Wcisnij 3 aby wyjsc z programu" << std::endl;
 
                 std::cout << std::endl;
-                std::cout << "Aktualny stan listy: " << std::endl;
+                std::cout << "Aktualny stan kopca : " << std::endl;
                 this->showElements();
 
                 std::cout << std::endl;

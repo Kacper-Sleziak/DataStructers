@@ -219,10 +219,10 @@ public:
 
                 std::cout << (isLeft ? "|--->" : "|--->");
 
-                // print the value of the node
+
                 std::cout << node->key << std::endl;
 
-                // enter the next tree level - left and right branch
+
                 printBT(prefix + (isLeft ? "|   " : "    "), node->leftKid, true);
                 printBT(prefix + (isLeft ? "|   " : "    "), node->rightKid, false);
             }
