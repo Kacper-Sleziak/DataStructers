@@ -3,16 +3,13 @@
 #include "MaxHeap.h"
 #include "DoublyLinkedList.h"
 #include "BinarySearchingTree.h"
+#include "iostream"
 
 int main (){
-    BinarySearchingTree tree;
-
-    tree.push(10);
-    tree.push(30);
-    tree.push(40);
-
-    tree.movingOnTree();
-
+//    DoublyLinkedList list;
+//    list.createListFromFile("numbers.txt");
+//    list.menu();
+std::cout<<"Hello World";
 }
 
 
